@@ -41,7 +41,6 @@ impl SettingsApp {
                             .color(ColorRgba8::rgba(240, 243, 250, 255))
                     )
             )
-        
     }
 
     fn sidebar(&self) -> impl View {
