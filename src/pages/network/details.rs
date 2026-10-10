@@ -135,7 +135,8 @@ impl NetworkPage {
         } else {
             self.tab
         };
-        let available = (self.viewport_size().width - if wide { 497.0 } else { 257.0 }).max(120.0);
+        let available = (crate::settings_app::content_width(self.viewport_size().width)
+            - if wide { 240.0 } else { 0.0 }).max(120.0);
         let columns = ((available + 6.0) / 151.0).floor().max(1.0) as usize;
         let height = tabs.len().div_ceil(columns) as f32 * 42.0 - 6.0;
         let mut tab_buttons = column().gap(6.0).height(height);

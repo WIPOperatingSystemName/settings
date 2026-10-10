@@ -196,11 +196,11 @@ impl Component for IpForm {
                 .profiles
                 .iter()
                 .any(|p| p.id == self.target.profile.id);
-        let available = (self.viewport_size().width
+        let available = (crate::settings_app::content_width(self.viewport_size().width)
             - if self.viewport_size().width >= 1000.0 {
-                529.0
+                272.0
             } else {
-                289.0
+                32.0
             })
         .max(100.0);
         let columns = Self::columns(self.viewport_size().width);

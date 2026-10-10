@@ -52,7 +52,7 @@ fn runtime(
 
 fn frame(runtime: &mut ComposedAppRuntime, tick: u64) {
     runtime
-        .prepare_frame(telorgon::MonotonicInstant::from_nanos(tick), false)
+        .prepare_frame(telorgon::MonotonicInstant::from_nanos(tick * 1_000_000), false)
         .unwrap();
 }
 
@@ -62,6 +62,39 @@ fn has(runtime: &ComposedAppRuntime, label: &str) -> bool {
         .texts
         .iter()
         .any(|(_, text)| runtime.ui().string(text.content) == Some(label))
+        || runtime.ui().semantics.iter().any(|(_, semantics)| {
+            matches!(semantics.name, telorgon::SemanticName::Text(name)
+                if runtime.ui().string(name) == Some(label))
+        })
+}
+
+#[test]
+fn compact_navigation_remains_visible_across_resizes() {
+    let (mut runtime, _writer) = runtime(readings(Vec::new()), Page::Display);
+    for (tick, width, height) in [(1000, 640, 480), (2000, 960, 560), (3000, 640, 480)] {
+        runtime.queue_input(telorgon::PlatformInput::Resize(telorgon::SizeF {
+            width: width as f32,
+            height: height as f32,
+        }));
+        runtime.flush_input(telorgon::MonotonicInstant::from_nanos(tick * 1_000_000));
+        frame(&mut runtime, tick);
+        for label in ["Display", "Sound", "Network", "Power", "Personalization"] {
+            let node = runtime
+                .ui()
+                .semantics
+                .iter()
+                .find_map(|(node, semantics)| {
+                    matches!(semantics.name, telorgon::SemanticName::Text(name)
+                        if runtime.ui().string(name) == Some(label))
+                        .then_some(node)
+                })
+                .unwrap();
+            let layout = runtime.layout().computed(node).unwrap();
+            assert!(layout.visible_rect.width >= layout.border_rect.width - 0.5);
+            assert!(layout.visible_rect.height >= layout.border_rect.height - 0.5);
+            assert!(layout.border_rect.width < if width < 800 { 64.0 } else { 200.0 });
+        }
+    }
 }
 
 fn readings(batteries: Vec<BatteryMetrics>) -> BatteryReadings {

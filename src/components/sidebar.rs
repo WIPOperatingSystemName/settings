@@ -21,7 +21,9 @@ impl Sidebar {
         page: Page,
         selected: Page,
     ) -> Button {
+        let compact = self.viewport_size().width < 800.0;
         button()
+            .accessible_label(title)
             .height(38.0)
             .width(Dimension::FILL)
             .background(if selected == page { ACCENT } else { PANEL })
@@ -32,7 +34,7 @@ impl Sidebar {
                     .gap(10.0)
                     .align_items(Alignment::Center)
                     .child(image(icon).width(18.0).height(18.0).tint(TEXT))
-                    .child(text(title).size(14.0).color(TEXT)),
+                    .children((!compact).then(|| text(title).size(14.0).color(TEXT))),
             )
             .on_press(move |this: &mut Self| this.controller.select(page))
     }
@@ -40,19 +42,20 @@ impl Sidebar {
 impl Component for Sidebar {
     fn view(&self) -> impl View {
         let selected = self.controller.selected(self);
+        let compact = self.viewport_size().width < 800.0;
         let mut sidebar = column()
-            .width(200.0)
+            .width(crate::settings_app::sidebar_width(self.viewport_size().width))
             .height(Dimension::FILL)
-            .padding(12.0)
+            .padding(if compact { 8.0 } else { 12.0 })
             .gap(6.0)
             .background(PANEL)
-            .child(
+            .children((!compact).then(|| {
                 text("Settings")
                     .size(18.0)
                     .weight(600)
                     .color(TEXT)
-                    .padding(10.0),
-            )
+                    .padding(10.0)
+            }))
             .child(self.navigation("Display", assets::icons::MONITOR, Page::Display, selected))
             .child(self.navigation("Sound", assets::icons::AUDIO_LINES, Page::Sound, selected))
             .child(self.navigation("Network", assets::icons::NETWORK, Page::Network, selected))

@@ -108,7 +108,8 @@ impl Component for DisplayPage {
                 .child(text(&state.monitor).size(18.0).weight(600).color(TEXT))
                 .child(text(&state.monitor_details).size(13.0).color(MUTED)))
             .child(settings)
-            .child(text("Display changes preview for 20 seconds. Keep them to confirm, or they revert automatically.").size(13.0).color(MUTED));
+            .child(text("Display changes preview for 20 seconds. Keep them to confirm, or they revert automatically.")
+                .size(13.0).color(MUTED).width(Dimension::FILL).height(40.0));
         if let Some(error) = &state.error {
             body = body.child(text(error).size(13.0).color(TEXT));
         }
