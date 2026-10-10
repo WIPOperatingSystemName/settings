@@ -89,7 +89,7 @@ impl PersonalizationPage {
 impl Component for PersonalizationPage {
     fn view(&self) -> impl View {
         let state = self.controller.state(self);
-        let width = (self.viewport_size().width - 257.0).max(100.0);
+        let width = crate::settings_app::content_width(self.viewport_size().width);
         let narrow = width < 410.0;
         let preview_width = (width - 32.0).clamp(68.0, 220.0);
         let preview_height = (preview_width * 9.0 / 16.0).ceil();
@@ -317,10 +317,10 @@ mod tests {
                 .height(Dimension::FILL)
                 .width(Dimension::FILL)
                 .gap(1.0)
-                .child(column().width(200.0))
+                .child(column().width(crate::settings_app::sidebar_width(self.viewport_size().width)))
                 .child(
                     column()
-                        .padding(28.0)
+                        .padding(crate::settings_app::content_padding(self.viewport_size().width))
                         .width(Dimension::FILL)
                         .height(Dimension::FILL)
                         .child(

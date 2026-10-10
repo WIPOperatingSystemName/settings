@@ -234,10 +234,11 @@ impl Component for Host {
         row()
             .height(Dimension::FILL)
             .width(Dimension::FILL)
-            .child(column().width(200.0))
+            .gap(1.0)
+            .child(column().width(crate::settings_app::sidebar_width(self.viewport_size().width)))
             .child(
                 column()
-                    .padding(28.0)
+                    .padding(crate::settings_app::content_padding(self.viewport_size().width))
                     .width(Dimension::FILL)
                     .height(Dimension::FILL)
                     .child(NetworkPage::new(self.controller.clone())),
@@ -420,8 +421,8 @@ fn network_browser_resizes_and_unmanaged_interfaces_work_without_management() {
     click(&mut runtime, "‹ All interfaces", 15);
     assert!(has(&runtime, "Search interfaces"));
     assert!(!has(&runtime, "Device information"));
-    for width in [700, 560, 1100] {
-        runtime.resize(SizeI { width, height: 720 }).unwrap();
+    for (width, height) in [(640, 480), (960, 560), (700, 720), (560, 720), (1100, 720)] {
+        runtime.resize(SizeI { width, height }).unwrap();
         runtime.prepare_frame(at(width as u64), false).unwrap();
         for (node, layout) in runtime.layout().computed_nodes() {
             if !runtime.ui().nodes.contains(node) {

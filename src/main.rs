@@ -26,7 +26,8 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         .assets(assets::bundle())
         .window(
             Window::new("Telorgon Settings")
-                .size(1100, 720)
+                .size(960, 560)
+                .minimum_size(640, 480)
                 .content(SettingsApp::new(controllers::SettingsController::new(
                     model,
                     preferences,

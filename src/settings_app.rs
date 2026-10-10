@@ -6,6 +6,18 @@ use crate::{
 };
 use telorgon::app::*;
 
+pub(crate) fn sidebar_width(width: f32) -> f32 {
+    if width < 800.0 { 64.0 } else { 200.0 }
+}
+
+pub(crate) fn content_padding(width: f32) -> f32 {
+    if width < 800.0 { 16.0 } else { 28.0 }
+}
+
+pub(crate) fn content_width(width: f32) -> f32 {
+    (width - sidebar_width(width) - 1.0 - content_padding(width) * 2.0).max(100.0)
+}
+
 #[component(no_default)]
 pub struct SettingsApp {
     #[input]
@@ -27,7 +39,7 @@ impl Component for SettingsApp {
                 column()
                     .width(Dimension::FILL)
                     .height(Dimension::FILL)
-                    .padding(28.0)
+                    .padding(content_padding(self.viewport_size().width))
                     .gap(16.0)
                     .background(BG)
                     .child(if page == Page::Network {
